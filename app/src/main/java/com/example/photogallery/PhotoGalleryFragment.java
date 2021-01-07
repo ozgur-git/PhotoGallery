@@ -1,3 +1,5 @@
+package com.example.photogallery;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,7 +10,6 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.example.photogallery.R;
 import com.example.photogallery.databinding.FragmentPhotoGalleryBinding;
 
 public class PhotoGalleryFragment extends Fragment {
@@ -34,6 +35,10 @@ public class PhotoGalleryFragment extends Fragment {
         mPhotoRecyclerView=binding.photoRecyclerView;
 
         mPhotoRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(),3));
+
+        FetchItemsTask fetchItemsTask=new FetchItemsTask();
+
+        fetchItemsTask.execute();
 
         return binding.getRoot();
     }
