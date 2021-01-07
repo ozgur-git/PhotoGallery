@@ -8,6 +8,8 @@ import java.net.URL;
 
 public class FlickrFetchr {
 
+    private static final String API_KEY="1cfa2ec314b06495f0eeb3416212f275";
+
     public byte[] getUrlBytes(String urlSpec) throws IOException {
 
         URL url=new URL(urlSpec);

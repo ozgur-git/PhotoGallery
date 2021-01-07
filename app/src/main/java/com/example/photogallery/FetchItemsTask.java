@@ -13,7 +13,7 @@ public class FetchItemsTask extends AsyncTask {
     protected Object doInBackground(Object[] objects) {
 
         try {
-            mLogger.info((new FlickrFetchr()).getUrlString("http://google.com"));
+            mLogger.info("web"+(new FlickrFetchr()).getUrlString("https://www.flickr.com/services/rest/?method=flickr.photos.getRecent&api_key=1cfa2ec314b06495f0eeb3416212f275&format=json&nojsoncallback=1"));
         } catch (IOException e) {
             e.printStackTrace();
         }
