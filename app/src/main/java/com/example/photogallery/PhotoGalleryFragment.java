@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.photogallery.databinding.FragmentPhotoGalleryBinding;
 import com.example.photogallery.databinding.ListItemBinding;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -36,9 +37,7 @@ public class PhotoGalleryFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         FetchItemsTask fetchItemsTask=new FetchItemsTask();
-        //todo dagger
         fetchItemsTask.execute();
-
     }
 
     @Nullable
@@ -88,7 +87,6 @@ public class PhotoGalleryFragment extends Fragment {
         @Override
         public GridViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             ListItemBinding binding=DataBindingUtil.inflate(LayoutInflater.from(getActivity()),R.layout.list_item,parent,false );
-
             return new GridViewHolder(binding.getRoot(),binding);
 
 //           return new GridViewHolder(LayoutInflater.from(getActivity()).inflate(R.layout.list_item,parent,false));
@@ -105,11 +103,15 @@ public class PhotoGalleryFragment extends Fragment {
             return mGalleryItemList.size();
         }
     }
-    private class FetchItemsTask extends AsyncTask<Void,Void,List<GalleryItem>> {
+    class FetchItemsTask extends AsyncTask<Void,Void,List<GalleryItem>> {
 
         Logger mLogger=Logger.getLogger(getClass().getName());
+        @Inject
+        FlickrFetchr mFlickrFetchr;
 
         public FetchItemsTask() {
+            PhotoGalleryComponent component=DaggerPhotoGalleryComponent.builder().photoGalleryModule(new PhotoGalleryModule()).build();
+            component.inject(this);
             mLogger.info("fetchitemstask is called");
         }
 
@@ -119,10 +121,9 @@ public class PhotoGalleryFragment extends Fragment {
 
         @Override
         protected List<GalleryItem> doInBackground(Void...params) {
-
             mLogger.info("fetchitemstask is executed");
             //            mLogger.info("web"+(new FlickrFetchr()).getUrlString("https://www.flickr.com/services/rest/?method=flickr.photos.getRecent&api_key=1cfa2ec314b06495f0eeb3416212f275&format=json&nojsoncallback=1"));
-            return new FlickrFetchr().fetchItems();//todo dagger inject
+            return mFlickrFetchr.fetchItems();
         }
 
         @Override

@@ -6,6 +6,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.inject.Inject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +21,13 @@ public class FlickrFetchr {
     Logger mLogger=Logger.getLogger(getClass().getName());
 
     private static final String API_KEY="1cfa2ec314b06495f0eeb3416212f275";
+    @Inject
+    GalleryItem mGalleryItem;
+
+//    public FlickrFetchr() {
+//        PhotoGalleryComponent component=DaggerPhotoGalleryComponent.builder().photoGalleryModule(new PhotoGalleryModule()).build();
+//        component.inject(this);
+//    }
 
     public byte[] getUrlBytes(String urlSpec) throws IOException {
 
@@ -82,16 +90,16 @@ public class FlickrFetchr {
 
         for(int i=0;i<photoJsonArray.length();i++) {
             JSONObject photoJsonObject = photoJsonArray.getJSONObject(i);
-            GalleryItem item = new GalleryItem();//todo DAGGER
-
-            item.setId(photoJsonObject.getString("id"));
-            item.setCaption(photoJsonObject.getString("title"));
+            PhotoGalleryComponent component=DaggerPhotoGalleryComponent.builder().photoGalleryModule(new PhotoGalleryModule()).build();
+            component.inject(this);//dagger sil
+            mGalleryItem.setId(photoJsonObject.getString("id"));
+            mGalleryItem.setCaption(photoJsonObject.getString("title"));
 
             if (photoJsonObject.has("url_s")) {
-                item.setUrl(photoJsonObject.getString("url_s"));
+                mGalleryItem.setUrl(photoJsonObject.getString("url_s"));
             }
 
-            items.add(item);
+            items.add(mGalleryItem);
         }
         mLogger.info("items size is "+items.size());
     }
