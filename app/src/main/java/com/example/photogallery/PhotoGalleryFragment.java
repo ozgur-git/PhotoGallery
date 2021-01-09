@@ -1,5 +1,6 @@
 package com.example.photogallery;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,8 +23,8 @@ public class PhotoGalleryFragment extends Fragment {
     Logger mLogger=Logger.getLogger(getClass().getName());
 
     private RecyclerView mPhotoRecyclerView;
-
     List<GalleryItem> mGalleryItemList;
+    FetchItemsTask fetchItemsTask;
 
     public static PhotoGalleryFragment newInstance(){
         return new PhotoGalleryFragment();
@@ -33,35 +34,41 @@ public class PhotoGalleryFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+        fetchItemsTask=new FetchItemsTask();
+        fetchItemsTask.execute();
+
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
+        mLogger.info("onCreateView is called");
         FragmentPhotoGalleryBinding binding= DataBindingUtil.inflate(inflater,R.layout.fragment_photo_gallery,container,false);
 
         mPhotoRecyclerView=binding.photoRecyclerView;
 
         mPhotoRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(),3));
 
-        FetchItemsTask fetchItemsTask=new FetchItemsTask();
 
-        //todo dagger
-
-        fetchItemsTask.setObserver((fetchItemsTask1)->{
-            mGalleryItemList=fetchItemsTask1.getGalleryItemList();
+//        fetchItemsTask=new FetchItemsTask();
+        fetchItemsTask.setObserver(()->{
             mPhotoRecyclerView.setAdapter(new GridAdapter(mGalleryItemList));
         });
 
-        fetchItemsTask.execute();
+//        fetchItemsTask.execute();
 
 
-        if (mGalleryItemList!=null){
-           mLogger.info("size is "+mGalleryItemList.size());
-        }
+
+        //todo dagger
 
         return binding.getRoot();
+    }
+
+    void update(){
+
+           mGalleryItemList=fetchItemsTask.getGalleryItemList();
+
     }
 
     private class GridViewHolder extends RecyclerView.ViewHolder{
@@ -100,7 +107,7 @@ public class PhotoGalleryFragment extends Fragment {
 
             return new GridViewHolder(binding.getRoot(),binding);
 
-//           return new GridViewHolder(LayoutInflater.from(getActivity()).inflate(R.layout.list_item,parent,false ));
+//           return new GridViewHolder(LayoutInflater.from(getActivity()).inflate(R.layout.list_item,parent,false));
         }
 
         @Override
@@ -115,4 +122,6 @@ public class PhotoGalleryFragment extends Fragment {
             return mGalleryItemList.size();
         }
     }
+
+
 }
