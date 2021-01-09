@@ -1,19 +1,23 @@
 package com.example.photogallery;
 
 import androidx.annotation.NonNull;
+import androidx.databinding.BaseObservable;
+import androidx.databinding.Bindable;
 
 public class GalleryItem {
 
-    private String mCaption;
+    public String mCaption;
     private String mId;
     private String mUrl;
 
+//    @Bindable
     public String getCaption() {
         return mCaption;
     }
 
     public void setCaption(String caption) {
         mCaption = caption;
+//        notifyPropertyChanged(BR.caption);
     }
 
     public String getId() {

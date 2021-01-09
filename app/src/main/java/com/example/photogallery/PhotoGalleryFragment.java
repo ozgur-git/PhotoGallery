@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.photogallery.databinding.FragmentPhotoGalleryBinding;
+import com.example.photogallery.databinding.ListItemBinding;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -44,13 +45,20 @@ public class PhotoGalleryFragment extends Fragment {
 
         mPhotoRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(),3));
 
-        FetchItemsTask fetchItemsTask=new FetchItemsTask(mGalleryItemList);//todo dagger
+        FetchItemsTask fetchItemsTask=new FetchItemsTask();
+
+        //todo dagger
+
+        fetchItemsTask.setObserver((fetchItemsTask1)->{
+            mGalleryItemList=fetchItemsTask1.getGalleryItemList();
+            mPhotoRecyclerView.setAdapter(new GridAdapter(mGalleryItemList));
+        });
 
         fetchItemsTask.execute();
 
+
         if (mGalleryItemList!=null){
            mLogger.info("size is "+mGalleryItemList.size());
-            mPhotoRecyclerView.setAdapter(new GridAdapter(mGalleryItemList));
         }
 
         return binding.getRoot();
@@ -58,16 +66,21 @@ public class PhotoGalleryFragment extends Fragment {
 
     private class GridViewHolder extends RecyclerView.ViewHolder{
 
+//        GalleryItem mGalleryItem;
+
         TextView mTextView;
 
-        public GridViewHolder(@NonNull View itemView) {
+
+        public GridViewHolder(@NonNull View itemView,ListItemBinding binding) {
             super(itemView);
-            mTextView=itemView.findViewById(R.id.item_title);
+            mTextView=binding.itemTitle;
+//            mTextView=itemView.findViewById(R.id.item_title);
         }
 
         void setItem(String text){
 
            mTextView.setText(text);
+//            mGalleryItem=galleryItem;
         }
     }
 
@@ -83,7 +96,11 @@ public class PhotoGalleryFragment extends Fragment {
         @Override
         public GridViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-           return new GridViewHolder(getLayoutInflater().inflate(R.layout.list_item,parent,false ));
+            ListItemBinding binding=DataBindingUtil.inflate(LayoutInflater.from(getActivity()),R.layout.list_item,parent,false );
+
+            return new GridViewHolder(binding.getRoot(),binding);
+
+//           return new GridViewHolder(LayoutInflater.from(getActivity()).inflate(R.layout.list_item,parent,false ));
         }
 
         @Override
