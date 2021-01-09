@@ -84,6 +84,7 @@ public class FlickrFetchr {
 
     private void parseItems(List<GalleryItem> items,JSONObject jsonBody) throws JSONException {
 
+
         JSONObject photosJsonObject=jsonBody.getJSONObject("photos");
         JSONArray photoJsonArray=photosJsonObject.getJSONArray("photo");
         mLogger.info("json array size is "+photoJsonArray.length());
