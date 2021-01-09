@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -46,7 +47,9 @@ public class FlickrFetchr {
         return new String(getUrlBytes(urlSpec));
     }
 
-    public void fetchItems(){
+    public List<GalleryItem> fetchItems(){
+
+        List<GalleryItem> items=new ArrayList<>();
 
         String url= Uri.parse("https://www.flickr.com/services/rest/").buildUpon().
                         appendQueryParameter("method","flickr.photos.getRecent").
@@ -60,6 +63,7 @@ public class FlickrFetchr {
             String jsonString=getUrlString(url);
             JSONObject jsonObject=new JSONObject(jsonString);
             mLogger.info("web"+jsonString);
+            parseItems(items,jsonObject);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -67,29 +71,29 @@ public class FlickrFetchr {
             e.printStackTrace();
         }
 
+        return items;
     }
 
     private void parseItems(List<GalleryItem> items,JSONObject jsonBody) throws JSONException {
 
         JSONObject photosJsonObject=jsonBody.getJSONObject("photos");
-        JSONArray photosJsonArray=photosJsonObject.getJSONArray("ohoto");
+        JSONArray photoJsonArray=photosJsonObject.getJSONArray("photo");
+        mLogger.info("json array size is "+photoJsonArray.length());
 
-        for(int i=0;i<photosJsonArray.length();i++){
+        for(int i=0;i<photoJsonArray.length();i++) {
+            JSONObject photoJsonObject = photoJsonArray.getJSONObject(i);
+            GalleryItem item = new GalleryItem();//todo DAGGER
 
+            item.setId(photoJsonObject.getString("id"));
+            item.setCaption(photoJsonObject.getString("title"));
 
+            if (photoJsonObject.has("url_s")) {
+                item.setUrl(photoJsonObject.getString("url_s"));
+            }
 
-
-
+            items.add(item);
         }
-
-
-
-
-
+        mLogger.info("items size is "+items.size());
     }
-
-
-
-
 
 }
