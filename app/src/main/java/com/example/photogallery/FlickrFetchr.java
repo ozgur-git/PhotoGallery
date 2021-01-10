@@ -3,11 +3,9 @@ package com.example.photogallery;
 
 import android.net.Uri;
 import com.google.gson.Gson;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import javax.inject.Inject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,6 +14,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
 public class FlickrFetchr {
@@ -57,7 +56,7 @@ public class FlickrFetchr {
         return new String(getUrlBytes(urlSpec));
     }
 
-    public List<Photo> fetchItems(){
+    public List<Photo> fetchItems(Integer pageNumber){
 
         List<Photo> items=new ArrayList<>();
 
@@ -66,13 +65,14 @@ public class FlickrFetchr {
                         appendQueryParameter("format","json").
                         appendQueryParameter("api_key","1cfa2ec314b06495f0eeb3416212f275").
                         appendQueryParameter("nojsoncallback","1").
+                        appendQueryParameter("page",String.valueOf(pageNumber)).
                         appendQueryParameter("extras","url_s").
                         build().toString();
 
+        mLogger.info("urlquery "+url);
         try {
             String jsonString=getUrlString(url);
             JSONObject jsonObject=new JSONObject(jsonString);
-            mLogger.info("web"+jsonString);
 //            parseItems(items,jsonObject);
             parseJSONString(items,jsonString);
 
@@ -81,7 +81,6 @@ public class FlickrFetchr {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         return items;
     }
 
@@ -92,9 +91,10 @@ public class FlickrFetchr {
         mLogger.info("total is "+topObject.getPhotos().getTotal());
         Photo[] itemArray=topObject.getPhotos().getPhoto();
         mLogger.info("array size is "+itemArray.length);
+        AtomicInteger count= new AtomicInteger();
         Arrays.stream(itemArray).forEach((item)->{
             items.add(item);
-            mLogger.info("item name is "+item.getTitle());
+            mLogger.info("item name is "+item.getTitle()+" count is "+ count.getAndIncrement());
         });
     }
 

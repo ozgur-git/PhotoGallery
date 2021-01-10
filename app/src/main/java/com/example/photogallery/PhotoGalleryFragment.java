@@ -27,7 +27,7 @@ public class PhotoGalleryFragment extends Fragment {
     private RecyclerView mPhotoRecyclerView;
     List<Photo> mGalleryItemList=new ArrayList<>();
 //    FetchItemsTask fetchItemsTask;
-
+    int pageNumber;
     public static PhotoGalleryFragment newInstance(){
         return new PhotoGalleryFragment();
     }
@@ -36,8 +36,9 @@ public class PhotoGalleryFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+        pageNumber=1;
         FetchItemsTask fetchItemsTask=new FetchItemsTask();
-        fetchItemsTask.execute();
+        fetchItemsTask.execute(pageNumber);
     }
 
     @Nullable
@@ -46,10 +47,28 @@ public class PhotoGalleryFragment extends Fragment {
         mLogger.info("onCreateView is called");
         FragmentPhotoGalleryBinding binding= DataBindingUtil.inflate(inflater,R.layout.fragment_photo_gallery,container,false);
         mPhotoRecyclerView=binding.photoRecyclerView;
+        mPhotoRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (!recyclerView.canScrollVertically(1)){
+                    pageNumber=(pageNumber>=10)?1:++pageNumber;
+                    mLogger.info("bottom "+pageNumber);
+                    FetchItemsTask fetchItemsTask=new FetchItemsTask();
+                    fetchItemsTask.execute(pageNumber);
+
+                }
+           }
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+            }
+
+        });
         mPhotoRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(),3));
         update();
         return binding.getRoot();
-
     }
 
     void update(){
@@ -94,7 +113,7 @@ public class PhotoGalleryFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull GridViewHolder holder, int position) {
-            holder.setItem(mGalleryItemList.get(position).getTitle());
+            holder.setItem(mGalleryItemList.get(position).getTitle()+"\n"+" count"+position);
 
         }
 
@@ -102,8 +121,9 @@ public class PhotoGalleryFragment extends Fragment {
         public int getItemCount() {
             return mGalleryItemList.size();
         }
+
     }
-    class FetchItemsTask extends AsyncTask<Void,Void,List<Photo>> {
+    class FetchItemsTask extends AsyncTask<Integer,Void,List<Photo>> {
 
         Logger mLogger=Logger.getLogger(getClass().getName());
         @Inject
@@ -116,10 +136,10 @@ public class PhotoGalleryFragment extends Fragment {
         }
 
         @Override
-        protected List<Photo> doInBackground(Void...params) {
+        protected List<Photo> doInBackground(Integer... pageNumber) {
             mLogger.info("fetchitemstask is executed");
             //            mLogger.info("web"+(new FlickrFetchr()).getUrlString("https://www.flickr.com/services/rest/?method=flickr.photos.getRecent&api_key=1cfa2ec314b06495f0eeb3416212f275&format=json&nojsoncallback=1"));
-            return mFlickrFetchr.fetchItems();
+            return mFlickrFetchr.fetchItems(pageNumber[0]);
         }
 
         @Override
@@ -128,6 +148,7 @@ public class PhotoGalleryFragment extends Fragment {
             mGalleryItemList=items;
             update();
         }
+
     }
 
 
