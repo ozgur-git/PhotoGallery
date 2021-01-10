@@ -148,8 +148,5 @@ public class PhotoGalleryFragment extends Fragment {
             mGalleryItemList=items;
             update();
         }
-
     }
-
-
 }
