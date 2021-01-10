@@ -115,10 +115,6 @@ public class PhotoGalleryFragment extends Fragment {
             mLogger.info("fetchitemstask is called");
         }
 
-        public List<Photo> getGalleryItemList() {
-            return mGalleryItemList;
-        }
-
         @Override
         protected List<Photo> doInBackground(Void...params) {
             mLogger.info("fetchitemstask is executed");
