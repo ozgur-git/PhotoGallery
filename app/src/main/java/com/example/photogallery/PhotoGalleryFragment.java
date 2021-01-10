@@ -25,7 +25,7 @@ public class PhotoGalleryFragment extends Fragment {
     Logger mLogger=Logger.getLogger(getClass().getName());
 
     private RecyclerView mPhotoRecyclerView;
-    List<GalleryItem> mGalleryItemList=new ArrayList<>();
+    List<Photo> mGalleryItemList=new ArrayList<>();
 //    FetchItemsTask fetchItemsTask;
 
     public static PhotoGalleryFragment newInstance(){
@@ -77,9 +77,9 @@ public class PhotoGalleryFragment extends Fragment {
     }
 
     private class GridAdapter extends RecyclerView.Adapter<GridViewHolder>{
-        List<GalleryItem> mGalleryItemList;
+        List<Photo> mGalleryItemList;
 
-        public GridAdapter(List<GalleryItem> galleryItemList) {
+        public GridAdapter(List<Photo> galleryItemList) {
             mGalleryItemList = galleryItemList;
         }
 
@@ -94,7 +94,7 @@ public class PhotoGalleryFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull GridViewHolder holder, int position) {
-            holder.setItem(mGalleryItemList.get(position).getCaption());
+            holder.setItem(mGalleryItemList.get(position).getTitle());
 
         }
 
@@ -103,7 +103,7 @@ public class PhotoGalleryFragment extends Fragment {
             return mGalleryItemList.size();
         }
     }
-    class FetchItemsTask extends AsyncTask<Void,Void,List<GalleryItem>> {
+    class FetchItemsTask extends AsyncTask<Void,Void,List<Photo>> {
 
         Logger mLogger=Logger.getLogger(getClass().getName());
         @Inject
@@ -115,19 +115,19 @@ public class PhotoGalleryFragment extends Fragment {
             mLogger.info("fetchitemstask is called");
         }
 
-        public List<GalleryItem> getGalleryItemList() {
+        public List<Photo> getGalleryItemList() {
             return mGalleryItemList;
         }
 
         @Override
-        protected List<GalleryItem> doInBackground(Void...params) {
+        protected List<Photo> doInBackground(Void...params) {
             mLogger.info("fetchitemstask is executed");
             //            mLogger.info("web"+(new FlickrFetchr()).getUrlString("https://www.flickr.com/services/rest/?method=flickr.photos.getRecent&api_key=1cfa2ec314b06495f0eeb3416212f275&format=json&nojsoncallback=1"));
             return mFlickrFetchr.fetchItems();
         }
 
         @Override
-        protected void onPostExecute(List<GalleryItem> items) {
+        protected void onPostExecute(List<Photo> items) {
             super.onPostExecute(items);
             mGalleryItemList=items;
             update();

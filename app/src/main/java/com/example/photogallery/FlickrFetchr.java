@@ -2,6 +2,7 @@ package com.example.photogallery;
 
 
 import android.net.Uri;
+import com.google.gson.Gson;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,6 +14,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -21,8 +23,8 @@ public class FlickrFetchr {
     Logger mLogger=Logger.getLogger(getClass().getName());
 
     private static final String API_KEY="1cfa2ec314b06495f0eeb3416212f275";
-    @Inject
-    GalleryItem mGalleryItem;
+
+    Photo mPhoto;
 
 //    public FlickrFetchr() {
 //        PhotoGalleryComponent component=DaggerPhotoGalleryComponent.builder().photoGalleryModule(new PhotoGalleryModule()).build();
@@ -55,9 +57,9 @@ public class FlickrFetchr {
         return new String(getUrlBytes(urlSpec));
     }
 
-    public List<GalleryItem> fetchItems(){
+    public List<Photo> fetchItems(){
 
-        List<GalleryItem> items=new ArrayList<>();
+        List<Photo> items=new ArrayList<>();
 
         String url= Uri.parse("https://www.flickr.com/services/rest/").buildUpon().
                         appendQueryParameter("method","flickr.photos.getRecent").
@@ -71,7 +73,8 @@ public class FlickrFetchr {
             String jsonString=getUrlString(url);
             JSONObject jsonObject=new JSONObject(jsonString);
             mLogger.info("web"+jsonString);
-            parseItems(items,jsonObject);
+//            parseItems(items,jsonObject);
+            parseJSONString(items,jsonString);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -82,27 +85,40 @@ public class FlickrFetchr {
         return items;
     }
 
-    private void parseItems(List<GalleryItem> items,JSONObject jsonBody) throws JSONException {
-
-
-        JSONObject photosJsonObject=jsonBody.getJSONObject("photos");
-        JSONArray photoJsonArray=photosJsonObject.getJSONArray("photo");
-        mLogger.info("json array size is "+photoJsonArray.length());
-
-        for(int i=0;i<photoJsonArray.length();i++) {
-            JSONObject photoJsonObject = photoJsonArray.getJSONObject(i);
-            PhotoGalleryComponent component=DaggerPhotoGalleryComponent.builder().photoGalleryModule(new PhotoGalleryModule()).build();
-            component.inject(this);//dagger sil
-            mGalleryItem.setId(photoJsonObject.getString("id"));
-            mGalleryItem.setCaption(photoJsonObject.getString("title"));
-
-            if (photoJsonObject.has("url_s")) {
-                mGalleryItem.setUrl(photoJsonObject.getString("url_s"));
-            }
-
-            items.add(mGalleryItem);
-        }
-        mLogger.info("items size is "+items.size());
+    private void parseJSONString(List<Photo> items,String jsonString) throws JSONException{
+        Gson gson=new Gson();
+        TopObject topObject=gson.fromJson(jsonString,TopObject.class);
+        mLogger.info("pages is "+topObject.getPhotos().getPages());
+        mLogger.info("total is "+topObject.getPhotos().getTotal());
+        Photo[] itemArray=topObject.getPhotos().getPhoto();
+        mLogger.info("array size is "+itemArray.length);
+        Arrays.stream(itemArray).forEach((item)->{
+            items.add(item);
+            mLogger.info("item name is "+item.getTitle());
+        });
     }
+
+//    private void parseItems(List<GalleryItem> items,JSONObject jsonBody) throws JSONException {
+//
+//
+//        JSONObject photosJsonObject=jsonBody.getJSONObject("photos");
+//        JSONArray photoJsonArray=photosJsonObject.getJSONArray("photo");
+//        mLogger.info("json array size is "+photoJsonArray.length());
+//
+//        for(int i=0;i<photoJsonArray.length();i++) {
+//            JSONObject photoJsonObject = photoJsonArray.getJSONObject(i);
+//            PhotoGalleryComponent component=DaggerPhotoGalleryComponent.builder().photoGalleryModule(new PhotoGalleryModule()).build();
+//            component.inject(this);//dagger sil
+//            mGalleryItem.setId(photoJsonObject.getString("id"));
+//            mGalleryItem.setCaption(photoJsonObject.getString("title"));
+//
+//            if (photoJsonObject.has("url_s")) {
+//                mGalleryItem.setUrl(photoJsonObject.getString("url_s"));
+//            }
+//
+//            items.add(mGalleryItem);
+//        }
+//        mLogger.info("items size is "+items.size());
+//    }
 
 }
