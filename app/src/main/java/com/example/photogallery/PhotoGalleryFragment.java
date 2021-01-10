@@ -2,9 +2,8 @@ package com.example.photogallery;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.util.DisplayMetrics;
+import android.view.*;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,13 +20,12 @@ import java.util.List;
 import java.util.logging.Logger;
 
 public class PhotoGalleryFragment extends Fragment {
-
     Logger mLogger=Logger.getLogger(getClass().getName());
 
     private RecyclerView mPhotoRecyclerView;
     List<Photo> mGalleryItemList=new ArrayList<>();
-//    FetchItemsTask fetchItemsTask;
     int pageNumber;
+
     public static PhotoGalleryFragment newInstance(){
         return new PhotoGalleryFragment();
     }
@@ -47,6 +45,18 @@ public class PhotoGalleryFragment extends Fragment {
         mLogger.info("onCreateView is called");
         FragmentPhotoGalleryBinding binding= DataBindingUtil.inflate(inflater,R.layout.fragment_photo_gallery,container,false);
         mPhotoRecyclerView=binding.photoRecyclerView;
+        ViewTreeObserver observer=mPhotoRecyclerView.getViewTreeObserver();
+        observer.addOnGlobalLayoutListener(() -> {
+            int measuredWidth=mPhotoRecyclerView.getMeasuredWidth();
+            mLogger.info("measured width is "+ measuredWidth);
+            Display display = getActivity().getWindowManager().getDefaultDisplay();
+            DisplayMetrics outMetrics = new DisplayMetrics ();
+            display.getMetrics(outMetrics);
+            float density  = getResources().getDisplayMetrics().density;
+
+            ((GridLayoutManager)mPhotoRecyclerView.getLayoutManager()).setSpanCount(measuredWidth /(int)(120*density));
+        });
+
         mPhotoRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
@@ -56,7 +66,6 @@ public class PhotoGalleryFragment extends Fragment {
                     mLogger.info("bottom "+pageNumber);
                     FetchItemsTask fetchItemsTask=new FetchItemsTask();
                     fetchItemsTask.execute(pageNumber);
-
                 }
            }
 
@@ -64,8 +73,8 @@ public class PhotoGalleryFragment extends Fragment {
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
             }
-
         });
+
         mPhotoRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(),3));
         update();
         return binding.getRoot();

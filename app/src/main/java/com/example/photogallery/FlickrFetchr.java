@@ -10,6 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,7 +64,7 @@ public class FlickrFetchr {
         String url= Uri.parse("https://www.flickr.com/services/rest/").buildUpon().
                         appendQueryParameter("method","flickr.photos.getRecent").
                         appendQueryParameter("format","json").
-                        appendQueryParameter("api_key","1cfa2ec314b06495f0eeb3416212f275").
+                        appendQueryParameter("api_key",API_KEY).
                         appendQueryParameter("nojsoncallback","1").
                         appendQueryParameter("page",String.valueOf(pageNumber)).
                         appendQueryParameter("extras","url_s").

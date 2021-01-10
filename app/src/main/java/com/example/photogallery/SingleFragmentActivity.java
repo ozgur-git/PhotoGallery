@@ -34,15 +34,6 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, createFragment()).commit();
         }
 
-        Display display = getWindowManager().getDefaultDisplay();
-        DisplayMetrics outMetrics = new DisplayMetrics ();
-        display.getMetrics(outMetrics);
-
-        float density  = getResources().getDisplayMetrics().density;
-        float dpHeight = outMetrics.heightPixels ;
-        float dpWidth  = outMetrics.widthPixels / density;
-
-        mLogger.info("density is "+density+" height is "+dpHeight+" width is "+dpWidth);
 
     }
 }
