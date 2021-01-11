@@ -34,9 +34,7 @@ public class FlickrFetchr {
     public byte[] getUrlBytes(String urlSpec) throws IOException {
 
         URL url=new URL(urlSpec);
-
         HttpURLConnection connection= (HttpURLConnection) url.openConnection();
-
         InputStream inputStream=connection.getInputStream();
         ByteArrayOutputStream outputStream=new ByteArrayOutputStream();
 
@@ -45,6 +43,7 @@ public class FlickrFetchr {
         while((data=inputStream.read())!=-1){
             outputStream.write(data);
         }
+
         outputStream.close();
         inputStream.close();;
         connection.disconnect();
@@ -73,7 +72,7 @@ public class FlickrFetchr {
         mLogger.info("urlquery "+url);
         try {
             String jsonString=getUrlString(url);
-            JSONObject jsonObject=new JSONObject(jsonString);
+//            JSONObject jsonObject=new JSONObject(jsonString);
 //            parseItems(items,jsonObject);
             parseJSONString(items,jsonString);
 
@@ -88,10 +87,7 @@ public class FlickrFetchr {
     private void parseJSONString(List<Photo> items,String jsonString) throws JSONException{
         Gson gson=new Gson();
         TopObject topObject=gson.fromJson(jsonString,TopObject.class);
-        mLogger.info("pages is "+topObject.getPhotos().getPages());
-        mLogger.info("total is "+topObject.getPhotos().getTotal());
         Photo[] itemArray=topObject.getPhotos().getPhoto();
-        mLogger.info("array size is "+itemArray.length);
         AtomicInteger count= new AtomicInteger();
         Arrays.stream(itemArray).forEach((item)->{
             items.add(item);

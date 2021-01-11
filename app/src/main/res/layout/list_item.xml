@@ -7,13 +7,20 @@
 <!--        <variable name="data" type="com.example.photogallery.GalleryItem"/>-->
 <!--    </data>-->
 
-    <LinearLayout
+<!--    <LinearLayout-->
 
-                  android:orientation="vertical"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content">
-        <TextView android:layout_width="match_parent"
-                  android:layout_height="match_parent"
-                  android:id="@+id/item_title"/>
-    </LinearLayout>
+<!--                  android:orientation="vertical"-->
+<!--                  android:layout_width="wrap_content"-->
+<!--                  android:layout_height="wrap_content">-->
+<!--        <TextView android:layout_width="match_parent"-->
+<!--                  android:layout_height="wrap_content"-->
+<!--                  android:id="@+id/item_title"/>-->
+<!--&lt;!&ndash;    </LinearLayout>&ndash;&gt;-->
+
+        <ImageView android:layout_width="match_parent"
+                   android:layout_height="120dp"
+                   android:id="@+id/item_image_view"
+                   android:layout_gravity="center"
+                   android:scaleType="centerCrop"/>
+<!--        -->
 </layout>

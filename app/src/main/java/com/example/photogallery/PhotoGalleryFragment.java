@@ -1,9 +1,11 @@
 package com.example.photogallery;
 
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.*;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,6 +17,7 @@ import com.example.photogallery.databinding.FragmentPhotoGalleryBinding;
 import com.example.photogallery.databinding.ListItemBinding;
 
 import javax.inject.Inject;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -23,7 +26,8 @@ public class PhotoGalleryFragment extends Fragment {
     Logger mLogger=Logger.getLogger(getClass().getName());
 
     private RecyclerView mPhotoRecyclerView;
-    List<Photo> mGalleryItemList=new ArrayList<>();
+    private List<Photo> mGalleryItemList=new ArrayList<>();
+    private ThumbnailDownloader<GridViewHolder> mThumbnailDownloader;
     int pageNumber;
 
     public static PhotoGalleryFragment newInstance(){
@@ -37,6 +41,10 @@ public class PhotoGalleryFragment extends Fragment {
         pageNumber=1;
         FetchItemsTask fetchItemsTask=new FetchItemsTask();
         fetchItemsTask.execute(pageNumber);
+
+        mThumbnailDownloader=new ThumbnailDownloader<>();
+        mThumbnailDownloader.start();
+        mThumbnailDownloader.getLooper();
     }
 
     @Nullable
@@ -87,20 +95,22 @@ public class PhotoGalleryFragment extends Fragment {
 
     private class GridViewHolder extends RecyclerView.ViewHolder{
 
-//        GalleryItem mGalleryItem;
-
         TextView mTextView;
-
+        ImageView mImageView;
 
         public GridViewHolder(@NonNull View itemView,ListItemBinding binding) {
             super(itemView);
-            mTextView=binding.itemTitle;
+//            mTextView=binding.itemTitle;
+            mImageView=binding.itemImageView;
 //            mTextView=itemView.findViewById(R.id.item_title);
         }
 
         void setItem(String text){
            mTextView.setText(text);
-//            mGalleryItem=galleryItem;
+        }
+
+        void setItem(Drawable drawable){
+            mImageView.setImageDrawable(drawable);
         }
     }
 
@@ -122,8 +132,8 @@ public class PhotoGalleryFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull GridViewHolder holder, int position) {
-            holder.setItem(mGalleryItemList.get(position).getTitle()+"\n"+" count"+position);
-
+//            holder.setItem(mGalleryItemList.get(position).getTitle()+"\n"+" count"+position);
+            holder.setItem(getActivity().getResources().getDrawable(R.drawable.front));
         }
 
         @Override
@@ -147,7 +157,11 @@ public class PhotoGalleryFragment extends Fragment {
         @Override
         protected List<Photo> doInBackground(Integer... pageNumber) {
             mLogger.info("fetchitemstask is executed");
-            //            mLogger.info("web"+(new FlickrFetchr()).getUrlString("https://www.flickr.com/services/rest/?method=flickr.photos.getRecent&api_key=1cfa2ec314b06495f0eeb3416212f275&format=json&nojsoncallback=1"));
+            try {
+                mLogger.info("web"+(new FlickrFetchr()).getUrlString("https://www.flickr.com/services/rest/?method=flickr.photos.getRecent&api_key=1cfa2ec314b06495f0eeb3416212f275&format=json&nojsoncallback=1"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             return mFlickrFetchr.fetchItems(pageNumber[0]);
         }
 
