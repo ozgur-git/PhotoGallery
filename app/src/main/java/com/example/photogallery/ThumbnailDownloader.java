@@ -19,7 +19,7 @@ public class ThumbnailDownloader<T> extends HandlerThread {
     private static final int MESSAGE_DOWNLOAD=0;
 
     private boolean mHasQuit=false;
-    private RequestHandler mRequestHandler;
+    private RequestHandler<T> mRequestHandler;
     private ConcurrentHashMap<T,String> mRequestMap=new ConcurrentHashMap<>();
     private Handler mResponseHandler;
     private ThumbnailDownloadListener<T> mThumbnailDownloadListener;
@@ -73,7 +73,7 @@ public class ThumbnailDownloader<T> extends HandlerThread {
         final Bitmap bitmap= BitmapFactory.decodeByteArray(bitmapBytes,0,bitmapBytes.length);
 
         mResponseHandler.post(()->{
-            if (mRequestMap.get(target)!=url||mHasQuit){
+            if (!mRequestMap.get(target).equals(url) ||mHasQuit){
                 return;
             }
             mRequestMap.remove(target);
