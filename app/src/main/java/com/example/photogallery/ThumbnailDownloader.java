@@ -30,6 +30,7 @@ public class ThumbnailDownloader<T> extends HandlerThread {
     @Override
     protected void onLooperPrepared() {
         mRequestHandler=new Handler(){
+
             @Override
             public void handleMessage(@NonNull Message msg) {
                 if (msg.what==MESSAGE_DOWNLOAD){
