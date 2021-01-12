@@ -1,8 +1,10 @@
 package com.example.photogallery;
 
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.view.*;
 import android.widget.ImageView;
@@ -42,7 +44,15 @@ public class PhotoGalleryFragment extends Fragment {
         FetchItemsTask fetchItemsTask=new FetchItemsTask();
         fetchItemsTask.execute(pageNumber);
 
-        mThumbnailDownloader=new ThumbnailDownloader<>();
+        Handler handler=new Handler();
+
+        mThumbnailDownloader=new ThumbnailDownloader<>(handler);
+
+        mThumbnailDownloader.setThumbnailDownloadListener((target,bitmap)->{
+            target.setItem(bitmap);
+
+        });
+
         mThumbnailDownloader.start();
 //        mThumbnailDownloader.getLooper();
         mLogger.info("Background thread started");
@@ -110,8 +120,8 @@ public class PhotoGalleryFragment extends Fragment {
            mTextView.setText(text);
         }
 
-        void setItem(Drawable drawable){
-            mImageView.setImageDrawable(drawable);
+        void setItem(Bitmap bitmap){
+            mImageView.setImageBitmap(bitmap);
         }
     }
 
@@ -134,7 +144,7 @@ public class PhotoGalleryFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull GridViewHolder holder, int position) {
 //            holder.setItem(mGalleryItemList.get(position).getTitle()+"\n"+" count"+position);
-            holder.setItem(getActivity().getResources().getDrawable(R.drawable.front));
+//            holder.setItem(getActivity().getResources().getDrawable(R.drawable.front));
             mThumbnailDownloader.queueThumbnail(holder,mGalleryItemList.get(position).getUrl_s());
         }
 
@@ -179,6 +189,7 @@ public class PhotoGalleryFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         mThumbnailDownloader.quit();
+        mThumbnailDownloader.clearQueue();
         mLogger.info("Background thread destroyed");
     }
 }
