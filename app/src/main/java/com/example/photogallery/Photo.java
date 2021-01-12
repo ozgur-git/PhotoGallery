@@ -6,11 +6,20 @@ public class Photo {
     String owner;
     String secret;
     String server;
+    String url_s;
     long farm;
     String title;
     int ispublic;
     int isfriend;
     int isfamily;
+
+    public String getUrl_s() {
+        return url_s;
+    }
+
+    public void setUrl_s(String url_s) {
+        this.url_s = url_s;
+    }
 
     public String getId() {
         return id;

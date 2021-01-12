@@ -72,6 +72,7 @@ public class FlickrFetchr {
         mLogger.info("urlquery "+url);
         try {
             String jsonString=getUrlString(url);
+            mLogger.info("web "+jsonString);
 //            JSONObject jsonObject=new JSONObject(jsonString);
 //            parseItems(items,jsonObject);
             parseJSONString(items,jsonString);

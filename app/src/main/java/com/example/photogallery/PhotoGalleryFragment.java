@@ -44,7 +44,8 @@ public class PhotoGalleryFragment extends Fragment {
 
         mThumbnailDownloader=new ThumbnailDownloader<>();
         mThumbnailDownloader.start();
-        mThumbnailDownloader.getLooper();
+//        mThumbnailDownloader.getLooper();
+        mLogger.info("Background thread started");
     }
 
     @Nullable
@@ -134,6 +135,7 @@ public class PhotoGalleryFragment extends Fragment {
         public void onBindViewHolder(@NonNull GridViewHolder holder, int position) {
 //            holder.setItem(mGalleryItemList.get(position).getTitle()+"\n"+" count"+position);
             holder.setItem(getActivity().getResources().getDrawable(R.drawable.front));
+            mThumbnailDownloader.queueThumbnail(holder,mGalleryItemList.get(position).getUrl_s());
         }
 
         @Override
@@ -157,11 +159,11 @@ public class PhotoGalleryFragment extends Fragment {
         @Override
         protected List<Photo> doInBackground(Integer... pageNumber) {
             mLogger.info("fetchitemstask is executed");
-            try {
-                mLogger.info("web"+(new FlickrFetchr()).getUrlString("https://www.flickr.com/services/rest/?method=flickr.photos.getRecent&api_key=1cfa2ec314b06495f0eeb3416212f275&format=json&nojsoncallback=1"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                mLogger.info("web"+(new FlickrFetchr()).getUrlString("https://www.flickr.com/services/rest/?method=flickr.photos.getRecent&api_key=1cfa2ec314b06495f0eeb3416212f275&format=json&nojsoncallback=1"));
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
             return mFlickrFetchr.fetchItems(pageNumber[0]);
         }
 
@@ -171,5 +173,12 @@ public class PhotoGalleryFragment extends Fragment {
             mGalleryItemList=items;
             update();
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mThumbnailDownloader.quit();
+        mLogger.info("Background thread destroyed");
     }
 }
