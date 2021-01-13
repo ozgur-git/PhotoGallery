@@ -1,7 +1,6 @@
 package com.example.photogallery;
 
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,7 +18,6 @@ import com.example.photogallery.databinding.FragmentPhotoGalleryBinding;
 import com.example.photogallery.databinding.ListItemBinding;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -48,10 +46,7 @@ public class PhotoGalleryFragment extends Fragment {
 
         mThumbnailDownloader=new ThumbnailDownloader<>(handler);
 
-        mThumbnailDownloader.setThumbnailDownloadListener((target,bitmap)->{
-            target.setItem(bitmap);
-
-        });
+        mThumbnailDownloader.setThumbnailDownloadListener((target,bitmap)-> target.setItem(bitmap));
 
         mThumbnailDownloader.start();
 //        mThumbnailDownloader.getLooper();
@@ -143,6 +138,7 @@ public class PhotoGalleryFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull GridViewHolder holder, int position) {
+
 //            holder.setItem(mGalleryItemList.get(position).getTitle()+"\n"+" count"+position);
 //            holder.setItem(getActivity().getResources().getDrawable(R.drawable.front));
             mThumbnailDownloader.queueThumbnail(holder,mGalleryItemList.get(position).getUrl_s());
