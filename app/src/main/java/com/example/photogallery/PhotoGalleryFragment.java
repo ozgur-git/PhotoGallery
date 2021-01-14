@@ -141,7 +141,8 @@ public class PhotoGalleryFragment extends Fragment {
 
 //            holder.setItem(mGalleryItemList.get(position).getTitle()+"\n"+" count"+position);
 //            holder.setItem(getActivity().getResources().getDrawable(R.drawable.front));
-            mThumbnailDownloader.queueThumbnail(holder,mGalleryItemList.get(position).getUrl_s());
+//            String[] urlArray=createArray(position);
+            mThumbnailDownloader.queueThumbnail(holder,createArray(position),position);
         }
 
         @Override
@@ -149,6 +150,31 @@ public class PhotoGalleryFragment extends Fragment {
             return mGalleryItemList.size();
         }
 
+        private String[] createArray(int position){
+
+            String[] returnArray=new String[21];
+            int lowerLimit=((position-10)<0)?position-10+100:position-10;
+            int higherLimit=((position+10)<0)?position+10-100:position+10;
+
+            int k=lowerLimit;
+
+            for (int j=0;j<=20;j++){
+
+                if (k<100){
+                    returnArray[j]=mGalleryItemList.get(k).getUrl_s();
+                    k++;
+                } else if (k==100){
+                    returnArray[j]=mGalleryItemList.get(0).getUrl_s();
+                    k++;
+                } else {
+                    returnArray[j]=mGalleryItemList.get(k-100).getUrl_s();
+                    k++;
+                }
+            }
+
+            return returnArray;
+
+        }
     }
     class FetchItemsTask extends AsyncTask<Integer,Void,List<Photo>> {
 

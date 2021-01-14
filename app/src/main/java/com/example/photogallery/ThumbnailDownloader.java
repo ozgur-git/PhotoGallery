@@ -9,6 +9,7 @@ import android.util.LruCache;
 import androidx.annotation.NonNull;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
@@ -20,7 +21,8 @@ public class ThumbnailDownloader<T> extends HandlerThread {
     private static final int MESSAGE_DOWNLOAD=0;
 
     private boolean mHasQuit=false;
-    final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+    private final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+
 
     private RequestHandler<T> mRequestHandler;
     private ConcurrentHashMap<T,String> mRequestMap=new ConcurrentHashMap<>();
@@ -66,22 +68,19 @@ public class ThumbnailDownloader<T> extends HandlerThread {
 
     private void handleRequest(final T target){
 
-        final String url=mRequestMap.get(target);
+        final String urlArray=mRequestMap.get(target);
 
-        if (url==null){
+        if (urlArray==null){
             return;
         }
 
 
-        if (mCache.get(url)==null) {
+        if (mCache.get(urlArray)==null) {
 
-            if (url==null){
-                return;
-            }
 
             byte[] bitmapBytes = new byte[0];
             try {
-                bitmapBytes = new FlickrFetchr().getUrlBytes(url);
+                bitmapBytes = new FlickrFetchr().getUrlBytes(urlArray);
                 mLogger.info("Bitmap downloaded");
             } catch (IOException e) {
                 mLogger.info("error downloading image" + e);
@@ -92,27 +91,25 @@ public class ThumbnailDownloader<T> extends HandlerThread {
            if (bitmap==null) return;
 
 
-            mCache.put(url, bitmap);
+            mCache.put(urlArray, bitmap);
         }
 
         mResponseHandler.post(()->{
-            if (mRequestMap.get(target)!=url || mHasQuit){
+            if (mRequestMap.get(target)!=urlArray || mHasQuit){
                 return;
             }
             mRequestMap.remove(target);
             mLogger.info("mRequestMap size is 0 "+mRequestMap.size());
-            mThumbnailDownloadListener.onThumbnailDownloaded(target,mCache.get(url));
+            mThumbnailDownloadListener.onThumbnailDownloaded(target,mCache.get(urlArray));
 //            mThumbnailDownloadListener.onThumbnailDownloaded(target,bitmap);
         });
 
     }
-    public void queueThumbnail(T target, String url){
-        mLogger.info("Got a URL: "+url);
-
-        if (url==null){
+    public void queueThumbnail(T target, String[] urlArray, int position){
+        if (urlArray[11]==null){
             mRequestMap.remove(target);
         } else {
-            mRequestMap.put(target,url);
+            mRequestMap.put(target,urlArray[11]);
             mRequestHandler.obtainMessage(MESSAGE_DOWNLOAD,target).sendToTarget();
         }
     }
