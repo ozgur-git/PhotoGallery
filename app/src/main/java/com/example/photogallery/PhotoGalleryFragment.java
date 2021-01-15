@@ -38,6 +38,7 @@ public class PhotoGalleryFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+        setHasOptionsMenu(true);
         pageNumber=1;
         FetchItemsTask fetchItemsTask=new FetchItemsTask();
         fetchItemsTask.execute(pageNumber);
@@ -92,6 +93,12 @@ public class PhotoGalleryFragment extends Fragment {
         mPhotoRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(),3));
         update();
         return binding.getRoot();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.fragment_photo_gallery,menu);
     }
 
     void update(){
@@ -152,6 +159,8 @@ public class PhotoGalleryFragment extends Fragment {
 
         private String[] createArray(int position){
 
+            mLogger.info("create array position is "+position);
+
             String[] returnArray=new String[21];
             int lowerLimit=((position-10)<0)?position-10+100:position-10;
             int higherLimit=((position+10)<0)?position+10-100:position+10;
@@ -160,10 +169,10 @@ public class PhotoGalleryFragment extends Fragment {
 
             for (int j=0;j<=20;j++){
 
-                if (k<100){
+                if (k<99){
                     returnArray[j]=mGalleryItemList.get(k).getUrl_s();
                     k++;
-                } else if (k==100){
+                } else if (k==99){
                     returnArray[j]=mGalleryItemList.get(0).getUrl_s();
                     k++;
                 } else {
@@ -200,9 +209,9 @@ public class PhotoGalleryFragment extends Fragment {
             String query="robot";
 
             if (query==null){
-                return mFlickrFetchr.fetchRecentPhotos();
+                return mFlickrFetchr.fetchRecentPhotos(pageNumber[0]);
             } else {
-                return mFlickrFetchr.searchPhotos(query);
+                return mFlickrFetchr.searchPhotos(query,pageNumber[0]);
             }
 
         }
