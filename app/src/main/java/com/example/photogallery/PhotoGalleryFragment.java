@@ -196,7 +196,7 @@ public class PhotoGalleryFragment extends Fragment {
 //            } catch (IOException e) {
 //                e.printStackTrace();
 //            }
-            return mFlickrFetchr.fetchItems(pageNumber[0]);
+            return mFlickrFetchr.downloadGalleryItems(pageNumber[0]);
         }
 
         @Override

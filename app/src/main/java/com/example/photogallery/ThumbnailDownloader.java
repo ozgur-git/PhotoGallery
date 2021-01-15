@@ -107,8 +107,8 @@ public class ThumbnailDownloader<T> extends HandlerThread {
             if (urlArray[BASE_INDEX]==null||mHasQuit){
                 return;
             }
+
             mRequestMap.remove(target);
-            mLogger.info("mRequestMap size is 0 "+mRequestMap.size());
             mThumbnailDownloadListener.onThumbnailDownloaded(target,mCache.get(urlArray[BASE_INDEX]));
 //            mThumbnailDownloadListener.onThumbnailDownloaded(target,bitmap);
         });
