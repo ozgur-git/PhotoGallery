@@ -196,7 +196,15 @@ public class PhotoGalleryFragment extends Fragment {
 //            } catch (IOException e) {
 //                e.printStackTrace();
 //            }
-            return mFlickrFetchr.downloadGalleryItems(pageNumber[0]);
+
+            String query="robot";
+
+            if (query==null){
+                return mFlickrFetchr.fetchRecentPhotos();
+            } else {
+                return mFlickrFetchr.searchPhotos(query);
+            }
+
         }
 
         @Override
