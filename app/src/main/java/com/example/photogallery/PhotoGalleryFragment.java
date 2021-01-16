@@ -121,19 +121,14 @@ public class PhotoGalleryFragment extends Fragment {
         MenuItem searchItem=menu.findItem(R.id.menu_item_search);
         final SearchView searchView= (SearchView) searchItem.getActionView();
 
-        searchView.setOnSearchClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                searchView.setQuery(QueryReferences.getStoredQuery(getActivity()),false);
-            }
-        });
-
+        searchView.setOnSearchClickListener(v -> searchView.setQuery(QueryReferences.getStoredQuery(getActivity()),false));
 
         searchView.setOnQueryTextListener(new OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 QueryReferences.setStoredQuery(getActivity(), query);
                 updateItems();
+                searchView.onActionViewCollapsed();
                 return false;
             }
 
@@ -142,7 +137,6 @@ public class PhotoGalleryFragment extends Fragment {
                 return false;
             }
         });
-
 
     }
 
