@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -21,6 +22,8 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+
+import static androidx.appcompat.widget.SearchView.*;
 
 public class PhotoGalleryFragment extends Fragment {
     Logger mLogger=Logger.getLogger(getClass().getName());
@@ -40,6 +43,7 @@ public class PhotoGalleryFragment extends Fragment {
         setRetainInstance(true);
         setHasOptionsMenu(true);
         pageNumber=1;
+//        updateItems();
         FetchItemsTask fetchItemsTask=new FetchItemsTask();
         fetchItemsTask.execute(pageNumber);
 
@@ -99,6 +103,28 @@ public class PhotoGalleryFragment extends Fragment {
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.fragment_photo_gallery,menu);
+
+        MenuItem searchItem=menu.findItem(R.id.menu_item_search);
+        final SearchView searchView= (SearchView) searchItem.getActionView();
+
+        searchView.setOnQueryTextListener(new OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                updateItems();
+//                return true;
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
+    }
+
+    private void updateItems() {
+        new FetchItemsTask().execute(pageNumber);
     }
 
     void update(){
