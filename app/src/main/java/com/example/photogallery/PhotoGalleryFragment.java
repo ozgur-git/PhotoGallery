@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.view.*;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,6 +31,8 @@ public class PhotoGalleryFragment extends Fragment {
 
     private RecyclerView mPhotoRecyclerView;
     private List<Photo> mGalleryItemList=new ArrayList<>();
+    private ProgressBar mProgressBar;
+
     private ThumbnailDownloader<GridViewHolder> mThumbnailDownloader;
     int pageNumber;
 
@@ -64,6 +67,7 @@ public class PhotoGalleryFragment extends Fragment {
         mLogger.info("onCreateView is called");
         FragmentPhotoGalleryBinding binding= DataBindingUtil.inflate(inflater,R.layout.fragment_photo_gallery,container,false);
         mPhotoRecyclerView=binding.photoRecyclerView;
+        mProgressBar=binding.progressBar;
         ViewTreeObserver observer=mPhotoRecyclerView.getViewTreeObserver();
         observer.addOnGlobalLayoutListener(() -> {
             int measuredWidth=mPhotoRecyclerView.getMeasuredWidth();
@@ -83,6 +87,8 @@ public class PhotoGalleryFragment extends Fragment {
                 if (!recyclerView.canScrollVertically(1)){
                     pageNumber=(pageNumber>=10)?1:++pageNumber;
                     mLogger.info("bottom "+pageNumber);
+                    recyclerView.setVisibility(View.INVISIBLE);
+                    mProgressBar.setVisibility(View.VISIBLE);
                     updateItems();
 //                    FetchItemsTask fetchItemsTask=new FetchItemsTask();
 //                    fetchItemsTask.execute(pageNumber);
@@ -127,6 +133,8 @@ public class PhotoGalleryFragment extends Fragment {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 QueryReferences.setStoredQuery(getActivity(), query);
+                mPhotoRecyclerView.setVisibility(View.INVISIBLE);
+                mProgressBar.setVisibility(View.VISIBLE);
                 updateItems();
                 searchView.onActionViewCollapsed();
                 return false;
@@ -141,7 +149,6 @@ public class PhotoGalleryFragment extends Fragment {
     }
 
     private void updateItems() {
-
         new FetchItemsTask().execute(String.valueOf(pageNumber),QueryReferences.getStoredQuery(getActivity()));
     }
 
@@ -150,7 +157,6 @@ public class PhotoGalleryFragment extends Fragment {
     }
 
     private class GridViewHolder extends RecyclerView.ViewHolder{
-
         TextView mTextView;
         ImageView mImageView;
 
@@ -205,21 +211,22 @@ public class PhotoGalleryFragment extends Fragment {
             mLogger.info("create array position is "+position);
 
             String[] returnArray=new String[21];
-            int lowerLimit=((position-10)<0)?position-10+100:position-10;
-            int higherLimit=((position+10)<0)?position+10-100:position+10;
+            int gallierySize=mGalleryItemList.size();
+            int lowerLimit=((position-10)<0)?position-10+gallierySize:position-10;
+            int higherLimit=((position+10)<0)?position+10-gallierySize:position+10;
 
             int k=lowerLimit;
 
             for (int j=0;j<=20;j++){
 
-                if (k<99){
+                if (k<gallierySize-1){
                     returnArray[j]=mGalleryItemList.get(k).getUrl_s();
                     k++;
-                } else if (k==99){
+                } else if (k==gallierySize){
                     returnArray[j]=mGalleryItemList.get(0).getUrl_s();
                     k++;
                 } else {
-                    returnArray[j]=mGalleryItemList.get(k-100).getUrl_s();
+                    returnArray[j]=mGalleryItemList.get(k-gallierySize+1).getUrl_s();
                     k++;
                 }
             }
@@ -246,7 +253,9 @@ public class PhotoGalleryFragment extends Fragment {
 //                mLogger.info("web"+(new FlickrFetchr()).getUrlString("https://www.flickr.com/services/rest/?method=flickr.photos.getRecent&api_key=1cfa2ec314b06495f0eeb3416212f275&format=json&nojsoncallback=1"));
 //            } catch (IOException e) {
 //                e.printStackTrace();
-//            }
+
+            //            }
+//            mProgressBar.setVisibility(View.VISIBLE);
 
             String query=params[1];
 
@@ -262,7 +271,9 @@ public class PhotoGalleryFragment extends Fragment {
             super.onPostExecute(items);
             mGalleryItemList=items;
             update();
-        }
+            mPhotoRecyclerView.setVisibility(View.VISIBLE);
+            mProgressBar.setVisibility(View.INVISIBLE);
+       }
     }
 
     @Override

@@ -5,10 +5,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 tools:context=".PhotoGalleryActivity">
-
-        <androidx.recyclerview.widget.RecyclerView
-                 android:layout_width="match_parent"
-                 android:layout_height="match_parent"
-                 android:id="@+id/photo_recycler_view"/>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-</layout>
+                <ProgressBar
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/progress_bar"
+                        android:indeterminate="true">
+                </ProgressBar>
+                <androidx.recyclerview.widget.RecyclerView
+                         android:layout_width="match_parent"
+                         android:layout_height="match_parent"
+                         android:id="@+id/photo_recycler_view"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+        </layout>
