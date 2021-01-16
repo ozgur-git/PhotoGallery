@@ -1,5 +1,6 @@
 package com.example.photogallery;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -49,6 +50,9 @@ public class PhotoGalleryFragment extends Fragment {
         updateItems();
 //        FetchItemsTask fetchItemsTask=new FetchItemsTask();
 //        fetchItemsTask.execute(pageNumber);
+
+        Intent intent=PollService.newIntent(getActivity());
+        getActivity().startService(intent);
 
         Handler handler=new Handler();
 
