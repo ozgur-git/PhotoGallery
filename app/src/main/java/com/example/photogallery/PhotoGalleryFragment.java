@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import static androidx.appcompat.widget.SearchView.*;
+import static androidx.appcompat.widget.SearchView.OnQueryTextListener;
 
 public class PhotoGalleryFragment extends Fragment {
     Logger mLogger=Logger.getLogger(getClass().getName());
@@ -43,9 +43,9 @@ public class PhotoGalleryFragment extends Fragment {
         setRetainInstance(true);
         setHasOptionsMenu(true);
         pageNumber=1;
-//        updateItems();
-        FetchItemsTask fetchItemsTask=new FetchItemsTask();
-        fetchItemsTask.execute(pageNumber);
+        updateItems();
+//        FetchItemsTask fetchItemsTask=new FetchItemsTask();
+//        fetchItemsTask.execute(pageNumber);
 
         Handler handler=new Handler();
 
@@ -83,8 +83,9 @@ public class PhotoGalleryFragment extends Fragment {
                 if (!recyclerView.canScrollVertically(1)){
                     pageNumber=(pageNumber>=10)?1:++pageNumber;
                     mLogger.info("bottom "+pageNumber);
-                    FetchItemsTask fetchItemsTask=new FetchItemsTask();
-                    fetchItemsTask.execute(pageNumber);
+                    updateItems();
+//                    FetchItemsTask fetchItemsTask=new FetchItemsTask();
+//                    fetchItemsTask.execute(pageNumber);
                 }
            }
 
@@ -100,6 +101,19 @@ public class PhotoGalleryFragment extends Fragment {
     }
 
     @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()){
+            case R.id.menu_item_clear:{
+                QueryReferences.setStoredQuery(getActivity(),null);
+                updateItems();
+                return true;
+            }
+            default:return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.fragment_photo_gallery,menu);
@@ -107,11 +121,19 @@ public class PhotoGalleryFragment extends Fragment {
         MenuItem searchItem=menu.findItem(R.id.menu_item_search);
         final SearchView searchView= (SearchView) searchItem.getActionView();
 
+        searchView.setOnSearchClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchView.setQuery(QueryReferences.getStoredQuery(getActivity()),false);
+            }
+        });
+
+
         searchView.setOnQueryTextListener(new OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                QueryReferences.setStoredQuery(getActivity(), query);
                 updateItems();
-//                return true;
                 return false;
             }
 
@@ -121,10 +143,12 @@ public class PhotoGalleryFragment extends Fragment {
             }
         });
 
+
     }
 
     private void updateItems() {
-        new FetchItemsTask().execute(pageNumber);
+
+        new FetchItemsTask().execute(String.valueOf(pageNumber),QueryReferences.getStoredQuery(getActivity()));
     }
 
     void update(){
@@ -211,7 +235,7 @@ public class PhotoGalleryFragment extends Fragment {
 
         }
     }
-    class FetchItemsTask extends AsyncTask<Integer,Void,List<Photo>> {
+    class FetchItemsTask extends AsyncTask<String,Void,List<Photo>> {
 
         Logger mLogger=Logger.getLogger(getClass().getName());
         @Inject
@@ -224,7 +248,7 @@ public class PhotoGalleryFragment extends Fragment {
         }
 
         @Override
-        protected List<Photo> doInBackground(Integer... pageNumber) {
+        protected List<Photo> doInBackground(String... params) {
             mLogger.info("fetchitemstask is executed");
 //            try {
 //                mLogger.info("web"+(new FlickrFetchr()).getUrlString("https://www.flickr.com/services/rest/?method=flickr.photos.getRecent&api_key=1cfa2ec314b06495f0eeb3416212f275&format=json&nojsoncallback=1"));
@@ -232,12 +256,12 @@ public class PhotoGalleryFragment extends Fragment {
 //                e.printStackTrace();
 //            }
 
-            String query="robot";
+            String query=params[1];
 
             if (query==null){
-                return mFlickrFetchr.fetchRecentPhotos(pageNumber[0]);
+                return mFlickrFetchr.fetchRecentPhotos(Integer.parseInt(params[0]));
             } else {
-                return mFlickrFetchr.searchPhotos(query,pageNumber[0]);
+                return mFlickrFetchr.searchPhotos(query,Integer.parseInt(params[0]));
             }
 
         }
