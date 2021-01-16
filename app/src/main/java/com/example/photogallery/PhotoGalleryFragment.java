@@ -147,7 +147,6 @@ public class PhotoGalleryFragment extends Fragment {
 
     void update(){
         mPhotoRecyclerView.setAdapter(new GridAdapter(mGalleryItemList));
-
     }
 
     private class GridViewHolder extends RecyclerView.ViewHolder{
@@ -226,7 +225,6 @@ public class PhotoGalleryFragment extends Fragment {
             }
 
             return returnArray;
-
         }
     }
     class FetchItemsTask extends AsyncTask<String,Void,List<Photo>> {
@@ -257,7 +255,6 @@ public class PhotoGalleryFragment extends Fragment {
             } else {
                 return mFlickrFetchr.searchPhotos(query,Integer.parseInt(params[0]));
             }
-
         }
 
         @Override
