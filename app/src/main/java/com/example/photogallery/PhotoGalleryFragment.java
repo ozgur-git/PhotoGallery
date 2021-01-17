@@ -51,9 +51,10 @@ public class PhotoGalleryFragment extends Fragment {
 //        FetchItemsTask fetchItemsTask=new FetchItemsTask();
 //        fetchItemsTask.execute(pageNumber);
 
-        Intent intent=PollService.newIntent(getActivity());
-        getActivity().startService(intent);
+//        Intent intent=PollService.newIntent(getActivity());
+//        getActivity().startService(intent);
 
+        PollService.setServiceAlarm(getActivity(),true);
         Handler handler=new Handler();
 
         mThumbnailDownloader=new ThumbnailDownloader<>(handler);
@@ -136,6 +137,8 @@ public class PhotoGalleryFragment extends Fragment {
         searchView.setOnQueryTextListener(new OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+
+                mLogger.info("submitted query is "+query);
                 QueryReferences.setStoredQuery(getActivity(), query);
                 mPhotoRecyclerView.setVisibility(View.INVISIBLE);
                 mProgressBar.setVisibility(View.VISIBLE);

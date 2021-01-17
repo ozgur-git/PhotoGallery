@@ -26,7 +26,7 @@ public class QueryReferences {
     public static void setPrefLastResultId(Context context,String id){
         PreferenceManager.getDefaultSharedPreferences(context)
                 .edit()
-                .putString(PREF_SEARCH_QUERY,id)
+                .putString(PREF_LAST_RESULT_ID,id)
                 .apply();
     }
 

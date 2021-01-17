@@ -2,16 +2,16 @@ package com.example.photogallery;
 
 public class Photo {
 
-    String id;
-    String owner;
-    String secret;
-    String server;
-    String url_s;
-    long farm;
-    String title;
-    int ispublic;
-    int isfriend;
-    int isfamily;
+    private String id;
+    private String owner;
+    private String secret;
+    private String server;
+    private String url_s;
+    private long farm;
+    private String title;
+    private int ispublic;
+    private int isfriend;
+    private int isfamily;
 
     public String getUrl_s() {
         return url_s;
