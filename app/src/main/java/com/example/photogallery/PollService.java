@@ -38,7 +38,12 @@ public class PollService extends IntentService {
            alarmManager.cancel(pendingIntent);
            pendingIntent.cancel();
        }
+   }
 
+   public static boolean isServiceAlarmOn(Context context){
+       Intent intent=PollService.newIntent(context);
+       PendingIntent pendingIntent=PendingIntent.getService(context,0,intent,PendingIntent.FLAG_NO_CREATE);
+       return pendingIntent!=null;
    }
 
     public static Intent newIntent(Context context){

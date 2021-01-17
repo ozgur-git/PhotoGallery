@@ -120,6 +120,13 @@ public class PhotoGalleryFragment extends Fragment {
                 updateItems();
                 return true;
             }
+            case R.id.menu_item_toggle_polling:{
+                boolean shouldStartAlarm=!PollService.isServiceAlarmOn(getActivity());
+                PollService.setServiceAlarm(getActivity(),shouldStartAlarm);
+                getActivity().invalidateOptionsMenu();
+                return true;
+
+            }
             default:return super.onOptionsItemSelected(item);
         }
     }
@@ -130,6 +137,14 @@ public class PhotoGalleryFragment extends Fragment {
         inflater.inflate(R.menu.fragment_photo_gallery,menu);
 
         MenuItem searchItem=menu.findItem(R.id.menu_item_search);
+        MenuItem toggleItem=menu.findItem(R.id.menu_item_toggle_polling);
+
+        if (PollService.isServiceAlarmOn(getActivity())){
+            toggleItem.setTitle(R.string.stop_polling);
+        } else {
+            toggleItem.setTitle(R.string.start_polling);
+        }
+
         final SearchView searchView= (SearchView) searchItem.getActionView();
 
         searchView.setOnSearchClickListener(v -> searchView.setQuery(QueryReferences.getStoredQuery(getActivity()),false));
