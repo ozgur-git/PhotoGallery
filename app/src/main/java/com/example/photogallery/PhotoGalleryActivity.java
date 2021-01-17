@@ -1,13 +1,10 @@
 package com.example.photogallery;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.os.PersistableBundle;
-import android.util.DisplayMetrics;
-import android.view.Display;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
-import java.util.logging.Logger;
 
 public class PhotoGalleryActivity extends SingleFragmentActivity {
 
@@ -16,7 +13,9 @@ public class PhotoGalleryActivity extends SingleFragmentActivity {
         return PhotoGalleryFragment.newInstance();
     }
 
-
+    public static Intent newIntent(Context context){
+        return new Intent(context,PhotoGalleryActivity.class);
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
