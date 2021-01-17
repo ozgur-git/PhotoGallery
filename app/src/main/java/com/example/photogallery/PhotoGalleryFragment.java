@@ -54,7 +54,6 @@ public class PhotoGalleryFragment extends Fragment {
 //        Intent intent=PollService.newIntent(getActivity());
 //        getActivity().startService(intent);
 
-        PollService.setServiceAlarm(getActivity(),true);
         Handler handler=new Handler();
 
         mThumbnailDownloader=new ThumbnailDownloader<>(handler);
@@ -62,6 +61,7 @@ public class PhotoGalleryFragment extends Fragment {
         mThumbnailDownloader.setThumbnailDownloadListener((target,bitmap)-> target.setItem(bitmap));
 
         mThumbnailDownloader.start();
+        PollService.setServiceAlarm(getActivity(),true);
 //        mThumbnailDownloader.getLooper();
         mLogger.info("Background thread started");
     }
@@ -73,6 +73,7 @@ public class PhotoGalleryFragment extends Fragment {
         FragmentPhotoGalleryBinding binding= DataBindingUtil.inflate(inflater,R.layout.fragment_photo_gallery,container,false);
         mPhotoRecyclerView=binding.photoRecyclerView;
         mProgressBar=binding.progressBar;
+//        updateItems();
         ViewTreeObserver observer=mPhotoRecyclerView.getViewTreeObserver();
         observer.addOnGlobalLayoutListener(() -> {
             int measuredWidth=mPhotoRecyclerView.getMeasuredWidth();
@@ -92,8 +93,8 @@ public class PhotoGalleryFragment extends Fragment {
                 if (!recyclerView.canScrollVertically(1)){
                     pageNumber=(pageNumber>=10)?1:++pageNumber;
                     mLogger.info("bottom "+pageNumber);
-                    recyclerView.setVisibility(View.INVISIBLE);
-                    mProgressBar.setVisibility(View.VISIBLE);
+//                    recyclerView.setVisibility(View.INVISIBLE);
+//                    mProgressBar.setVisibility(View.VISIBLE);
                     updateItems();
 //                    FetchItemsTask fetchItemsTask=new FetchItemsTask();
 //                    fetchItemsTask.execute(pageNumber);
@@ -118,6 +119,7 @@ public class PhotoGalleryFragment extends Fragment {
             case R.id.menu_item_clear:{
                 QueryReferences.setStoredQuery(getActivity(),null);
                 updateItems();
+                update();
                 return true;
             }
             case R.id.menu_item_toggle_polling:{
@@ -158,6 +160,7 @@ public class PhotoGalleryFragment extends Fragment {
                 mPhotoRecyclerView.setVisibility(View.INVISIBLE);
                 mProgressBar.setVisibility(View.VISIBLE);
                 updateItems();
+//                update();
                 searchView.onActionViewCollapsed();
                 return false;
             }
@@ -167,7 +170,6 @@ public class PhotoGalleryFragment extends Fragment {
                 return false;
             }
         });
-
     }
 
     private void updateItems() {
@@ -175,6 +177,7 @@ public class PhotoGalleryFragment extends Fragment {
     }
 
     void update(){
+        mLogger.info("update has been called");
         mPhotoRecyclerView.setAdapter(new GridAdapter(mGalleryItemList));
     }
 
@@ -233,22 +236,22 @@ public class PhotoGalleryFragment extends Fragment {
             mLogger.info("create array position is "+position);
 
             String[] returnArray=new String[21];
-            int gallierySize=mGalleryItemList.size();
-            int lowerLimit=((position-10)<0)?position-10+gallierySize:position-10;
-            int higherLimit=((position+10)<0)?position+10-gallierySize:position+10;
+            int gallerySize=mGalleryItemList.size();
+            int lowerLimit=((position-10)<0)?position-10+gallerySize:position-10;
+            int higherLimit=((position+10)<0)?position+10-gallerySize:position+10;
 
             int k=lowerLimit;
 
             for (int j=0;j<=20;j++){
 
-                if (k<gallierySize-1){
+                if (k<gallerySize-1){
                     returnArray[j]=mGalleryItemList.get(k).getUrl_s();
                     k++;
-                } else if (k==gallierySize){
+                } else if (k==gallerySize){
                     returnArray[j]=mGalleryItemList.get(0).getUrl_s();
                     k++;
                 } else {
-                    returnArray[j]=mGalleryItemList.get(k-gallierySize+1).getUrl_s();
+                    returnArray[j]=mGalleryItemList.get(k-gallerySize+1).getUrl_s();
                     k++;
                 }
             }
