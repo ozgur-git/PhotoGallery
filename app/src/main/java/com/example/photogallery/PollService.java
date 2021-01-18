@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.os.SystemClock;
+import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -20,6 +21,8 @@ public class PollService extends IntentService {
 
    private static final String TAG="PollService";
    private static final long POLL_INTERVAL_MS= TimeUnit.MINUTES.toMillis(1);
+   public static final String ACTION_SHOW_NOTIFICATION="com.example.photogallery.SHOW_NOTIFICATION";
+   public static final String PERM_PRIVATE="com.example.android.photogallery.PRIVATE";
 
    private static final int PAGE_NUMBER=1;
 
@@ -28,17 +31,22 @@ public class PollService extends IntentService {
     }
 
    public static void setServiceAlarm(Context context,boolean isOn){
-      Intent intent=PollService.newIntent(context);
+//       Log.i("setAlarm","alarm is called");
+       Intent intent=PollService.newIntent(context);
       PendingIntent pendingIntent=PendingIntent.getService(context,0,intent,0);
 
       AlarmManager alarmManager=(AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
        if (isOn){
            alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime(),POLL_INTERVAL_MS,pendingIntent);//TODO wake up dene
+           Log.i("alarm","alarm is on");
        } else {
            alarmManager.cancel(pendingIntent);
            pendingIntent.cancel();
+           Log.i("alalrm","alarm is cancelled");
        }
+
+       QueryReferences.setAlarmOn(context,isOn);
    }
 
    public static boolean isServiceAlarmOn(Context context){
@@ -53,7 +61,7 @@ public class PollService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        mLogger.info("service started!");
+        mLogger.info("broadcast service started!");
         if (!isNetworkAvailableConnected()) {
             return;
         }
@@ -95,8 +103,8 @@ public class PollService extends IntentService {
                     .build();
 
             NotificationManagerCompat notificationManager=NotificationManagerCompat.from(this);
-
             notificationManager.notify(0,notification);
+            sendBroadcast(new Intent(ACTION_SHOW_NOTIFICATION));
         }
 
         QueryReferences.setPrefLastResultId(this,resultId);
