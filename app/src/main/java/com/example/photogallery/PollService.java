@@ -23,6 +23,8 @@ public class PollService extends IntentService {
    private static final long POLL_INTERVAL_MS= TimeUnit.MINUTES.toMillis(1);
    public static final String ACTION_SHOW_NOTIFICATION="com.example.photogallery.SHOW_NOTIFICATION";
    public static final String PERM_PRIVATE="com.example.android.photogallery.PRIVATE";
+    public static final String REQUEST_CODE="REQUEST_CODE";
+    public static final String NOTIFICATION="NOTIFICATION";
 
    private static final int PAGE_NUMBER=1;
 
@@ -102,13 +104,22 @@ public class PollService extends IntentService {
                     .setAutoCancel(true)
                     .build();
 
-            NotificationManagerCompat notificationManager=NotificationManagerCompat.from(this);
-            notificationManager.notify(0,notification);
-            sendBroadcast(new Intent(ACTION_SHOW_NOTIFICATION));
+//            NotificationManagerCompat notificationManager=NotificationManagerCompat.from(this);
+//            notificationManager.notify(0,notification);
+//            sendBroadcast(new Intent(ACTION_SHOW_NOTIFICATION),PERM_PRIVATE);
+
+            showBackgroundNotification(0,notification);
         }
 
         QueryReferences.setPrefLastResultId(this,resultId);
 
+    }
+
+    private void showBackgroundNotification(int requestCode, Notification notification) {
+       Intent i=new Intent(ACTION_SHOW_NOTIFICATION);
+       i.putExtra(REQUEST_CODE,requestCode);
+       i.putExtra(NOTIFICATION,notification);
+       sendOrderedBroadcast(i,PERM_PRIVATE,null,null,Activity.RESULT_OK,null,null);
     }
 
     private boolean isNetworkAvailableConnected() {
@@ -118,4 +129,6 @@ public class PollService extends IntentService {
 
         return connectivityManager.getActiveNetworkInfo()!=null&&connectivityManager.getActiveNetworkInfo().isConnected();
     }
+
+
 }
