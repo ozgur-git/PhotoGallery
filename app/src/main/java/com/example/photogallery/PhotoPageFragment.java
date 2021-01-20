@@ -39,7 +39,7 @@ public class PhotoPageFragment extends VisibleFragment{
 
         View v=inflater.inflate(R.layout.fragment_photo_page,container,false);
 
-        mWebView.findViewById(R.id.web_view);
+        mWebView=v.findViewById(R.id.web_view);
 
         return v;
     }
