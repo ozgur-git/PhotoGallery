@@ -1,5 +1,6 @@
 package com.example.photogallery;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -8,7 +9,6 @@ import android.util.DisplayMetrics;
 import android.view.*;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
@@ -35,6 +35,8 @@ public class PhotoGalleryFragment extends VisibleFragment {
     private ThumbnailDownloader<GridViewHolder> mThumbnailDownloader;
     int pageNumber;
 
+    private static final int BASE_INDEX=11;
+
     public static PhotoGalleryFragment newInstance(){
         return new PhotoGalleryFragment();
     }
@@ -56,7 +58,7 @@ public class PhotoGalleryFragment extends VisibleFragment {
 
         mThumbnailDownloader=new ThumbnailDownloader<>(handler);
 
-        mThumbnailDownloader.setThumbnailDownloadListener((target,bitmap)-> target.setItem(bitmap));
+        mThumbnailDownloader.setThumbnailDownloadListener((target,bitmap)->target.setItem(bitmap));
 
         mThumbnailDownloader.start();
         PollService.setServiceAlarm(getActivity(),true);
@@ -179,23 +181,31 @@ public class PhotoGalleryFragment extends VisibleFragment {
         mPhotoRecyclerView.setAdapter(new GridAdapter(mGalleryItemList));
     }
 
-    private class GridViewHolder extends RecyclerView.ViewHolder{
-        TextView mTextView;
+    private class GridViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+        Photo mPhoto;
         ImageView mImageView;
 
         public GridViewHolder(@NonNull View itemView,ListItemBinding binding) {
             super(itemView);
 //            mTextView=binding.itemTitle;
             mImageView=binding.itemImageView;
+            mImageView.setOnClickListener(this);
 //            mTextView=itemView.findViewById(R.id.item_title);
         }
 
-        void setItem(String text){
-           mTextView.setText(text);
+        void setPhoto(Photo photo){
+            mPhoto=photo;
+
         }
 
         void setItem(Bitmap bitmap){
             mImageView.setImageBitmap(bitmap);
+        }
+
+        @Override
+        public void onClick(View v) {
+            Intent intent=new Intent(Intent.ACTION_VIEW,mPhoto.getPhotoPageUri());
+            startActivity(intent);
         }
     }
 
@@ -221,7 +231,9 @@ public class PhotoGalleryFragment extends VisibleFragment {
 //            holder.setItem(mGalleryItemList.get(position).getTitle()+"\n"+" count"+position);
 //            holder.setItem(getActivity().getResources().getDrawable(R.drawable.front));
 //            String[] urlArray=createArray(position);
-            mThumbnailDownloader.queueThumbnail(holder,createArray(position),position);
+            Photo[] photoArray=new Photo[21];
+            mThumbnailDownloader.queueThumbnail(holder,createArray(position,photoArray),position);
+            holder.setPhoto(photoArray[BASE_INDEX]);
         }
 
         @Override
@@ -229,11 +241,12 @@ public class PhotoGalleryFragment extends VisibleFragment {
             return mGalleryItemList.size();
         }
 
-        private String[] createArray(int position){
+        private String[] createArray(int position,Photo[] photoArray){
 
             mLogger.info("create array position is "+position);
 
             String[] returnArray=new String[21];
+
             int gallerySize=mGalleryItemList.size();
             int lowerLimit=((position-10)<0)?position-10+gallerySize:position-10;
             int higherLimit=((position+10)<0)?position+10-gallerySize:position+10;
@@ -243,12 +256,15 @@ public class PhotoGalleryFragment extends VisibleFragment {
             for (int j=0;j<=20;j++){
 
                 if (k<gallerySize-1){
+                    photoArray[j]=mGalleryItemList.get(k);
                     returnArray[j]=mGalleryItemList.get(k).getUrl_s();
                     k++;
                 } else if (k==gallerySize){
+                    photoArray[j]=mGalleryItemList.get(0);
                     returnArray[j]=mGalleryItemList.get(0).getUrl_s();
                     k++;
                 } else {
+                    photoArray[j]=mGalleryItemList.get(k-gallerySize+1);
                     returnArray[j]=mGalleryItemList.get(k-gallerySize+1).getUrl_s();
                     k++;
                 }

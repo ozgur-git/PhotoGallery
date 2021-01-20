@@ -84,9 +84,7 @@ public class ThumbnailDownloader<T> extends HandlerThread {
             if (bitmap==null) return;
 
             mCache.put(url,bitmap);
-
         }
-
     }
 
     private void handleRequest(final T target){

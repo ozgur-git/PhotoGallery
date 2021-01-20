@@ -1,5 +1,7 @@
 package com.example.photogallery;
 
+import android.net.Uri;
+
 public class Photo {
 
     private String id;
@@ -91,5 +93,13 @@ public class Photo {
 
     public void setIsfamily(int isfamily) {
         this.isfamily = isfamily;
+    }
+
+    public Uri getPhotoPageUri(){
+        return Uri.parse("https://www.flickr.com/photos/")
+                .buildUpon()
+                .appendPath(owner)
+                .appendPath(id)
+                .build();
     }
 }
