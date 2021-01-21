@@ -2,15 +2,18 @@ package com.example.photogallery;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.google.android.material.tabs.TabLayout;
 
 public class PhotoPageFragment extends VisibleFragment{
 
@@ -69,6 +72,14 @@ public class PhotoPageFragment extends VisibleFragment{
         });
         mWebView.setWebViewClient(new WebViewClient());
         mWebView.loadUrl(mUri.toString());
+        mWebView.addJavascriptInterface(new Object(){
+            @JavascriptInterface
+            public void send(String message){
+                Log.i("JAVASCRIPT","message is "+message);
+            }
+        },"androidObject");
+
+//        mWebView.loadUrl("http://10.0.2.2:8080/and/");//javascript object injection is tested with localhost
 
         return v;
     }
