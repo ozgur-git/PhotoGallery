@@ -1,5 +1,6 @@
 package com.example.photogallery;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -69,9 +70,25 @@ public class PhotoPageFragment extends VisibleFragment{
 //                super.onReceivedTitle(view, title);
 //                getActivity().getActionBar().setSubtitle(title);
             }
+
+
         });
-        mWebView.setWebViewClient(new WebViewClient());
+        mWebView.setWebViewClient(new WebViewClient(){
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+//                return super.shouldOverrideUrlLoading(view, url);
+
+                if (!(url.startsWith("http")||url.startsWith("https"))){
+                    Intent intent=(new Intent(Intent.ACTION_VIEW,Uri.parse(url)));
+                    return true;
+                }
+                return false;
+            }
+        });
+
         mWebView.loadUrl(mUri.toString());
+
+//        mWebView.loadUrl("https://play.google.com");
         mWebView.addJavascriptInterface(new Object(){
             @JavascriptInterface
             public void send(String message){
