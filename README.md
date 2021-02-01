@@ -21,7 +21,10 @@ I added the followings to the standard code described in the book
 * GSON
 
 # Setup
-Follow the guidelines below
+Please follow the guidelines 
 https://developer.android.com/studio/run
+
+
+
 
 
