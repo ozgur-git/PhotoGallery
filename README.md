@@ -13,4 +13,14 @@ I added the followings to the standard code described in the book
 * dynamically adjusting grid columns number wih respect to screen size and orientation.
 * add an LRUCache so that it downloads and caches the previous and the next 10 photos to achieve smooth scrolling performance.
 * add progress bar.
- 
+
+# Technology
+
+*Java
+*Android SDK
+*HTTP/REST
+*GSON
+
+# Setup
+
+
