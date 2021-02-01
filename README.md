@@ -1,5 +1,5 @@
 # General Info
-This is an android native Java application from the book The Big Nerd Ranch Guide Android Programming,3rd Edition. The project's main targets are
+This is an android native Java application from the book The Big Nerd Ranch Guide Android Programming,3rd Edition. It displays recent photos or searched photos with a keyword from Flickr web site page by page. The project's main targets are
 - create and open an HTTPURL connection (somewhat similar to XMLHttpRequest), make queries using Flickr REST APIs flickr.photos.search and flickr.photos.getRecent
 - receive and parse the inputstream in JSON format asynchronously.
 - download, cache and present the recent  or the searched thumbnailed photos to the user with RecylerView in gridlist asynchronously.
