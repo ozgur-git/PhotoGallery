@@ -6,6 +6,7 @@ This is an android native application from the book The Big Nerd Ranch Guide And
 * add functionality so that users can click on thumbnails an display the content in WebView.
 * add an alarm using background services to poll recent photos periodically and show n notification bar if any.
 * use an ordered broadcast to stop polling when the actvivity is foreground and start polling when the activity is not visible.
+
 I added the following to the standard code described in the book
 * parse JSON responses using GSON library instead of the JSONObject library.
 * add page number parameter to the Flicker API query so that the user can see the next page when hit bottom while scrolling the gridlist.
