@@ -15,11 +15,10 @@ I added the followings to the standard code described in the book
 * add progress bar.
 
 # Technology
-
-*Java
-*Android SDK
-*HTTP/REST
-*GSON
+* Java
+* Android SDK
+* HTTP/REST (Flickr API)
+* GSON
 
 # Setup
 
