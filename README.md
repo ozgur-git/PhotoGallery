@@ -17,9 +17,11 @@ I added the followings to the standard code described in the book
 # Technology
 * Java
 * Android SDK
-* HTTP/REST (Flickr API)
+* HTTP/REST (Flickr REST API)
 * GSON
 
 # Setup
+Follow the guidelines below
+https://developer.android.com/studio/run
 
 
