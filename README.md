@@ -4,7 +4,7 @@ This is an android native Java application from the book The Big Nerd Ranch Guid
 - receive and parse the inputstream in JSON format asynchronously.
 - download, cache and present the recent  or the searched thumbnailed photos to the user with RecylerView in gridlist asynchronously.
 - add functionality so that users can click on thumbnails an display the content in WebView.
-- add an alarm using background services to poll recent photos periodically and show n notification bar if any.
+- add an alarm using background services to poll recent photos periodically and give information in the notification bar if any.
 - use an ordered broadcast to stop polling when the actvivity is foreground and start polling when the activity is not visible.
 
 I added the followings to the standard code described in the book
